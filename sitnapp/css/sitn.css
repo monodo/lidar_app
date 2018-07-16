@@ -34,7 +34,7 @@ Customize default viewer
 }
 
 .scene_header_title {
-    background-image: url('../images/gear.png');
+    background-image: url('images/gear.png');
     background-repeat: no-repeat;
     background-position: right bottom;
 }
@@ -86,7 +86,7 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
         width: 210px;
         height: 19px;
     }
-    
+
     .sitn-autocomplete {
         font-size: 10px;
         width: 250px;

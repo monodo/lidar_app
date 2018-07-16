@@ -8,14 +8,14 @@
       $( "<div>" ).text( message ).prependTo( "#log" );
       $( "#log" ).scrollTop( 0 );
     }
- 
+
     $( "#places" ).autocomplete({
         classes: {
             "ui-autocomplete": "sitn-autocomplete"
         },
         source: function( request, response ) {
             $.ajax( {
-                url: "https://sitn.ne.ch/production/wsgi/fulltextsearch?",
+                url: "https://mapnv.ch/main/wsgi/fulltextsearch?",
                 dataType: "jsonp",
                 data: {
                     query: request.term,
@@ -45,44 +45,23 @@
         select: function(event, ui) {
 
             coord = ui.item.geom.coordinates;
-            $.ajax({
-                url: "https://sitn.ne.ch/production/wsgi/raster?",
-                dataType: "jsonp",
-                data: {
-                    lon: coord[0],
-                    lat: coord[1],
-                    'layers': 'mns'
-                },
-                success: function(data) {
-                    let zoom_out = 200;
-                    let alti = parseInt(data.mns);
-                    let z = alti + zoom_out;
-                    let newPosition = new THREE.Vector3(coord[0], coord[1], z);
-   
-                    
-                    let annotationsA = viewer.scene.getAnnotations();
-                    for (let index in annotationsA.children) {
-                        if (annotationsA.children[index].description == "Adresse SITN") {
-                            annotationsA.children[index].visible = false;
-                        }
-                    }
+            var alti = 700;
+            var zoom_out = 100;
+            viewer.scene.addAnnotation([coord[0][0], coord[0][1], alti - zoom_out], {
+                "title": ui.item.label,
+                "description": 'Adresse MAPNV',
+                "cameraPosition": [coord[0][0], coord[0][1], alti + zoom_out],
+                "cameraTarget": [coord[0][0], coord[0][1], alti]
+            });
 
-                    viewer.scene.addAnnotation([coord[0], coord[1], z - zoom_out], {
-                        "title": ui.item.label,
-                        "description": 'Adresse SITN',
-                        "cameraPosition": [coord[0], coord[1], alti + zoom_out],
-                        "cameraTarget": [coord[0], coord[1], alti]
-                    });
-                    let annotationsB = viewer.scene.getAnnotations();
-                    for (let index in annotationsB.children) {
-                        if (annotationsB.children[index].description == "Adresse SITN") {
-                            annotationsB.children[index].elDescription.css('opacity', 0); // hugly hack
-                            annotationsB.children[index].moveHere(viewer.scene.camera);
-                        }
-                    }
-
+            let annotationsB = viewer.scene.getAnnotations();
+            for (let index in annotationsB.children) {
+                if (annotationsB.children[index].description == "Adresse MAPNV") {
+                    annotationsB.children[index].elDescription.css('opacity', 0); // hugly hack
+                    annotationsB.children[index].moveHere(viewer.scene.camera);
                 }
-            })
+            }
+
         }
     });
  });
